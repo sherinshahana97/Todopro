@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.title }}</title>
+    <link rel="stylesheet" href="{% static 'project.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-brand">TodoPro</div>
+            <div class="nav-links">
+                <a href="{% url 'homepage' %}">HomePage</a>
+                <a href="{% url 'export_as_markdown' project.unique_id %}" class="export-button">Export as Markdown</a>
+                <a href="{% url 'logout' %}">Logout</a>
+               
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <h1 class="project-title">{{ project.title }}</h1>
+        <form action="{% url 'update_project_title' project.unique_id %}" method="POST" class="edit-form">
+            {% csrf_token %}
+            <input type="text" name="title" value="{{ project.title }}" required>
+            <button type="submit">Edit</button>
+        </form>
+
+        <h2>Add New Todo</h2>
+        <form action="{% url 'view_project' project.unique_id %}" method="POST">
+            {% csrf_token %}
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" required>
+            <label for="due_date">Due Date:</label>
+            <input type="date" id="due_date" name="due_date" required>
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+            </select>
+            <button type="submit">Add Todo</button>
+        </form>
+
+        <h2>Todos</h2>
+        <ul>
+            {% for todo in todos %}
+                <li>
+                    {{ todo.description }} - {{ todo.due_date }} - {{ todo.get_status_display }}
+                    <div>
+                        <a href="{% url 'update_todo' todo.id %}">
+                            <button class="action-button">Update</button>
+                        </a>
+                        <form action="{% url 'delete_todo' todo.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="action-button" onclick="return confirm('Are you sure you want to delete this todo?');">Delete</button>
+                        </form>
+                    </div>
+                </li>
+            {% empty %}
+                <li>No todos available.</li>
+            {% endfor %}
+        </ul>
+    </main>
+</body>
+</html>

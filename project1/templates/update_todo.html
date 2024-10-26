@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Todo</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'project.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Update Todo</h1>
+    </header>
+
+    <main>
+        <form action="{% url 'update_todo' todo.id %}" method="POST" class="todo-form">
+            {% csrf_token %}
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" value="{{ todo.description }}" required>
+            
+            <label for="due_date">Due Date:</label>
+            <input type="date" id="due_date" name="due_date" value="{{ todo.due_date|date:'Y-m-d' }}" required>
+            
+            <label for="status">Status:</label>
+            <select id="status" name="status">
+                <option value="pending" {% if todo.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="in_progress" {% if todo.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                <option value="completed" {% if todo.status == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+            
+            <div class="button-group">
+                <button type="submit" class="submit-button">Update Todo</button>
+                <a href="{% url 'view_project' todo.project.unique_id %}" class="cancel-button">Cancel</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>
